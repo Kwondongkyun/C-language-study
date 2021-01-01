@@ -1,0 +1,253 @@
+### 구조체
+**구조체 코드**
+
+// 구조체 초기와 & 대입
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <string.h>
+
+struct content {                          // 구조체 정의(새로운 데이터형 생성)
+	char title[40];
+	int price;
+	double rate;
+};
+
+int main(void)
+{
+	struct content c1 = { "Avengers", 11000, 8.8 };               // 구조체 변수 선언 & 초기화
+	struct content c2 = { "cake", 123, 3.35 };
+	struct content c3 = { 0 };
+
+	c3.price = c1.price;                                          // 멤버 접근 연산자(.) 이용 -> 구조체 멤버에 접근, 같은 구조체형 변수끼리 대입 가능. Ex) struct content c2 = c1;
+	c3.rate = c2.rate;                                                                                           // 단, 구조체 배열 중 배열은 제외
+	strcpy(c3.title, c2.title);                                        // strcpy(dest, src); 함수 -> src를 dest로 복사
+
+	printf("c1 = %s, %d, %.1f\n", c1.title, c1.price, c1.rate);               // 출력
+	printf("c2 = %s, %d, %.1f\n", c2.title, c2.price, c2.rate);
+	printf("c3 = %s, %d, %.1f\n", c3.title, c3.price, c3.rate);
+	
+	return 0;
+}
+
+// 구조체 멤버 비교
+#include <stdio.h>
+#include <string.h>
+
+struct content {                // 구조체 정의
+	char title[40];
+	int price;
+	double rate;
+};
+
+int main(void) {
+	struct content c1 = { "Apple", 1234, 3.4 };               // 구조체 변수 선언 & 초기화
+	struct content c2 = c1;
+
+	if (strcmp(c1.title, c2.title) == 0 && c1.price == c2.price && c1.rate == c2.rate)        // strcmp(lhs, rhs); 함수 -> lhs와 rhs 비교
+		printf("c1 == c2");                                                                     // 구조체 변수는 관계 연산자 사용 X. Ex) if(c1 == c2) : 컴파일 에러
+	else
+		printf("c1 != c2");
+}
+
+//구조체 배열
+#include <stdio.h>
+#include <string.h>
+
+struct content {          // 구조체 정의
+	char title[40];
+	int price;
+	double rate;
+};
+
+int main(void) {
+	struct content arr[] = {                // 구조체 배열 변수 선언 & 초기화
+		{"Apple", 1234, 1.1},
+		{"Banana", 123, 2.2},
+		{"Orange", 12345, 3.3}
+	};
+	int size = sizeof(arr) / sizeof(arr[0]);
+
+	for (int i = 0; i < size; i++)                                                          // 출력 시 배열과 마찬가지로 반복문 사용
+		printf("arr[%d] = %s, %d, %.1lf\n", i, arr[i].title, arr[i].price, arr[i].rate);
+
+}
+
+// 구조체 탐색
+#include <stdio.h>
+#include <string.h>
+
+struct content {              // 구조체 정의
+	char title[40];
+	int price;
+	double rate;
+};
+
+int main(void)
+{
+	struct content arr[] = {                                               // 구조체 배열 변수 선언 & 초기화
+		{"Apple", 10, 1.1}, {"Banana", 20, 2.2}, {"Orange", 30, 3.3}, 
+    {"Mango", 40, 4.4}, {"Grape", 50, 5.5}, {"Kiwi", 60, 6.6}
+	};
+	int size = sizeof(arr) / sizeof(arr[0]);
+
+	char title[40];
+	printf("과일? ");
+	gets_s(title, sizeof(title));
+	int i;
+
+	for (i = 0; i < size; i++) {
+		if (strcmp(arr[i].title, title) == 0)             // strcmp(lhs, rhs); 함수 -> lhs와 rhs 비교
+			break;
+	}
+
+	if (i == size)
+		printf("찾을 수 없습니다.\n");
+	else
+		printf("%s: 가격 = %d, 당도 = %.1f\n", arr[i].title, arr[i].price, arr[i].rate);        // 출력 시 구조체 배열도 마찬가지로 멤버 접근 연산자 사용
+}
+
+// 구조체 포인터
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <string.h>
+struct content {                    // 구조체 정의
+	char title[40];
+	int price;
+	double rate;
+};
+
+int main(void)
+{
+	struct content c1 = { "Avengers", 11000, 8.8 };
+	struct content* p = &c1;                                       // 구조체 포인터 선언
+                                                                 // 간접 멤버 접근 연산자(->) : 구조체 포인터로 구조체 변수의 멤버에 접근
+	p->price *= 0.8;	                                             // (*p).price *= 0.8;	c1.price *= 0.8; p->price *= 0.8 (3개 모두 같은 표현)
+	(*p).rate = 8.9;	                                             // p->rate, c1.rate, (*p).rate
+	strcat(p->title, ": Endgame");
+
+	printf("%s, %d, %.1f\n", p->title, p->price, p->rate);        // 출력
+}
+
+// 구조체 함수 1
+#include <stdio.h>
+struct point {                // 구조체 정의
+	int x, y;
+};
+void print_point(struct point pt) {           // 구조체 함수 정의
+	printf("(%d, %d)", pt.x, pt.y);             // pt.x : 구조체 pt 변수의 x 멤버
+}
+int main(void) {
+	int a, b;
+	scanf_s("%d %d", &a, &b);
+
+	struct point pt1 = { a,b };                            // 구조체 변수 선언 & 초기화
+	print_point(pt1);
+}
+
+// 구조체 함수 (값에 의한 호출)
+#include <stdio.h>
+struct point {                                                        // 구조체 정의
+	int x, y;
+};
+void print_point(struct point pt);                                    // 구조체 함수 선언
+int main(void) {
+	struct point arr[] = {                                              // 구조체 배열 선언 & 초기화
+		{10,20}, {35,41}, {12,63}, {72,55}, {92, 86}, {4,27}
+	};
+	int size = sizeof(arr) / sizeof(arr[0]);
+	int i;
+
+	for (i = 0; i < size; i++) {
+		print_point(arr[i]);
+	}
+	printf("\n");
+}
+void print_point(struct point pt) {                                   // 구조체 함수 정의
+	printf("(%d, %d) ", pt.x, pt.y);
+}
+
+// 구조체 함수 (참조에 의한 호출 : 포인터 이용하여 구조체를 복사하지 않고 전달)
+#include <stdio.h>
+
+struct point {                                                        // 구조체 정의
+	int x, y;
+};
+void print_point(const struct point* ptr);                            // 구조체 함수 선언 ( ptr : 입력 매개변수 -> 읽기 전용 포인터로 선언(const)
+void move_point(struct point* ptr, int offset);                       // 구조체 함수 선언 ( ptr : 입출력 매개변수)
+int main(void) {
+	struct point arr[] = {                                              // 구조체 배열 변수 선언 & 초기화
+		{13, 31}, {43, 58}, {23, 19}, {68, 74}, {48, 79}, {5, 19}
+	};
+	int size = sizeof(arr) / sizeof(arr[0]);
+	int i, offset;
+
+	for (i = 0; i < size; i++) {
+		print_point(&arr[i]);
+	}printf("\n");
+
+	printf("이동할 오프셋? ");
+	scanf_s("%d", &offset);
+
+	for (i = 0; i < size; i++) {
+		move_point(&arr[i], offset);
+		print_point(&arr[i]);
+	}
+}
+void print_point(const struct point* ptr) {
+	printf("(%d, %d) ", ptr->x, ptr->y);
+}
+void move_point(struct point* ptr, int offset) {
+	ptr->x = ptr->x + offset;
+	ptr->y = ptr->y + offset;
+}
+
+// 구조체 비트 필드
+#include <stdio.h>
+// 비트필드 : 구조체의 멤버를 비트 단위로 할당, 비드필드의 멤버는 메모리 최하위 비트부터 선언 및 순서대로 할당
+// 메모리 사용을 최소화 or 정해진 바이트 안에 정보를 인코딩하기 위한 목적
+struct date {
+	unsigned short year : 7;
+	unsigned short month : 4;
+	unsigned short day : 5;
+};
+
+int main(void) {
+	struct date dday = { 19, 5, 5 };
+	
+	printf("20%d년 %d월 %d일", dday.year, dday.month, dday.day);
+}
+
+// 구조체 멤버로 다른 구조체 사용
+#include <stdio.h>
+#include <math.h>                               // sqrt 함수 사용
+
+struct point {                                  // 구조체 정의
+	int x, y;
+};
+struct line {                                   // 구조체 정의(다른 구조체를 멤버로 사용)
+	struct point start, end;
+};
+void print_point(const struct point* ptr);      // 구조체 함수 선언 (입력 매개변수)
+double get_length(const struct line* ptr);
+
+int main(void) {
+	struct line ln1 = {                           // line 구조체 변수 선언 & 초기화
+		{10, 20}, {30, 40}
+	};
+	printf("직선 정보: ");
+	print_point(&ln1.start);                      // 참조에 의한 호출
+	print_point(&ln1.end);
+  
+ <방법 1>                                       |     <방법 2>
+	printf("\n: %f\n", get_length(&ln1));   |   int dx = ln1.end.x - ln1.start.x;
+}                                               |   int dy = ln1.end.y - ln1.start.y;
+                                                |   printf("\n길이: %f\n", sqrt(dx * dx + dy * dy));
+void print_point(const struct point* ptr) {     | }
+	printf("(%d, %d) ", ptr->x, ptr->y);    | ( get_length 함수 삭제)
+}                                               |
+                                                |
+double get_length(const struct line* ptr) {     |
+	int dx = ptr->end.x - ptr->start.x;     |
+	int dy = ptr->end.y - ptr->start.y;     |
+	return sqrt(dx * dx + dy * dy);         |
+}
