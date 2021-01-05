@@ -1,0 +1,105 @@
+// 문자 입출력 함수의 동작
+#include <stdio.h>
+int main(void) {
+	int ch1, ch2;
+
+	ch1 = getchar();			    // 문자 입력
+	ch2 = fgetc(stdin);				// 엔터 키 입력
+
+	putchar(ch1);					    // 문자 출력
+	fputc(ch2, stdout);				// 엔터 키 출력
+
+	return 0;
+}
+
+
+// 문자 입출력에서의 EOF
+#include <stdio.h>
+int main(void) {
+	int ch;
+
+	while (1) {
+		ch = getchar();
+		if (ch == EOF)
+			break;
+		putchar(ch);
+	}
+	return 0;
+}
+
+
+
+
+< printf 함수 >
+
+- printf 함수의 원형
+int printf(const char* format, ...);
+
+- printf 함수의 형식 문자열 구조
+%[flags][width][.precision][{h | l | L}] type
+
+
+(1) type 필드
+    출력할 값의 형식 지정
+    type 필드에 따라 출력할 값을 문자열로 변환 ->. stdout의 출력 버퍼에 저장
+    Ex) printf("%u", 333); -> 333 (부호 없는 10진수로 출력)
+        printf("%g", 1.2345); -> 1.2345 (지수와 소수점 표기 방ㅇ식 중 더 간단한 형식으로 출력)
+        printf("%p", "xyz"); -> 00A57B60 (주소를 16진수로 출력)
+    type 필드 앞 {h | l | L} -> h : short형 출력, l : long형 출력, L : long double형 출력
+    
+(2) width 필드
+    출력할 값의 폭을 지정
+    출력할 값의 문자수 < width 값 -> 전체 폭(width)의 오른쪽에 맞춰서 출력
+    (-> 반대 : width 무시)
+    실수 출력 시 사용되는 . e, 부호 + - 도 폭에서 한 문자 차지
+    Ex) printf("%10d", 333); -> _______333
+    
+(3) precision 필드
+    출력할 값의 정밀도를 지정
+    실수 출력에 정밀도 사용 -> 출력할 값의 소수점 이하 자릿수를 설정
+    (-> 정밀도 지정X : 소수점 이하 6자리 출력)
+    정수 출력에 정밀도 사용 -> 출력할 정수의 자릿수 설정
+    Ex) printf("%10.3f", 4.5678); -> _____4.568 (반올림)
+        printf("%10.5d", 333); -> _____00333
+        
+(4) flags 필드
+    -, +, 빈칸, 0, # 문자 사용가능
+    Ex) printf("%-10d", 123); -> 123_______
+        printf("%+d", 123); -> +123______
+        printf("% d\n", 123); -> _123______
+        printf("%010d", 123); -> 0000000789
+        printf("%#x", 0xabc); -> 0xabc_____
+
+
+< scanf 함수 >
+
+- scanf 함수의 원형
+int scanf(const char* format, ...);
+
+- scanf 함수의 형식 문자열 구조
+%[*][width][{h | l | L}] type
+
+(1) type 필드
+    입력받을 값의 형식 지정(= printf 함수의 type 필드)
+    문자 : %c
+    정수 : %d, %i, %u, %o, %x, %X   (short형 : %hd)
+    실수 : %e, %E, %f, %g, %G (+l -> double 형)
+    문자열 : %s
+    
+(2) width 필드
+    입력받을 값의 자릿수를 지정
+    공백 문자로 구분X 여러 값 입력 가능
+    Ex) int year, month, day;
+        scanf("%4d%2d%2d", &year, &month, &day);
+
+
+// 형식이 없는 표준 스트림 입출력 함수
+   stdin으로부터 입력 버퍼의 문자 or 문자열을 읽음
+   stdout에 대해 출력 버퍼로 문자 or 문자열을 내보냄
+   
+   int getchar(void); -> 문자 하나 입력 받음
+   int putchar(int ch); -> 문자 하나를 출력
+   char *get_s(char *str, size_t n); -> 한 줄의 문자열을 입력
+   int puts(const char *str); -> 한 줄의 문자열을 출력
+
+///////////////////////////////////////////////////
