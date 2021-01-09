@@ -18,7 +18,7 @@
 
 
 ### 파일 입출력의 개요
-![image](https://user-images.githubusercontent.com/63184686/104091486-05899300-52c1-11eb-8000-9f2b7ba3f8d4.png)
+![file](https://user-images.githubusercontent.com/63184686/104093895-f0b4fb80-52d0-11eb-940c-8800868ce744.png)
 
 (1) 일반적인 파일 입출력 절차
     파일 입출력을 하기 위해서는 먼저 파일을 열어야 한다.
@@ -42,7 +42,8 @@
         Ex) fp = fopen("c:\\work\\chap11\\ex11_02\\a.txt", "r");
         
     <파일 열기 모드로 사용할 수 있는 값>
-    ![KakaoTalk_20210109_220208194](https://user-images.githubusercontent.com/63184686/104092300-6bc4e480-52c6-11eb-856d-89c9884070ac.png)
+    ![KakaoTalk_20210109_220208194](https://user-images.githubusercontent.com/63184686/104093888-ded35880-52d0-11eb-8d16-70240596e7ac.png)
+
     
     Ex) 텍스트 파일
         FILE* fp = NULL;                    // 파일 포인터 준비
