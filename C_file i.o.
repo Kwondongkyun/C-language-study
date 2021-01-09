@@ -1,0 +1,141 @@
+### 파일 입출력
+- 텍스트 파일
+  일반 문서 편집기에서 열어서 내용 확인 가능한 문자들을 저장하는 파일  Ex) 메모장 파일, 프로그램의 소스파일
+  
+  Ex) 텍스트 입출력
+      int a = 123;
+      fprintf(fp, "%d", a);
+
+
+- 2진파일
+  2진 데이터를 저장하는 파일 -> 일반 문서 편집기에서는 그 내용 확인X 
+  사람은 읽을 수 X, 컴퓨터가 읽을 수 있는 파일  Ex) 프로그램 실행파일, 사운드 파일, 이미지 파일
+  
+  Ex) 2진 입출력
+      int a = 123;
+      fwrite(&a, sizeof(int), 1, fp);
+
+
+
+### 파일 입출력의 개요
+![image](https://user-images.githubusercontent.com/63184686/104091486-05899300-52c1-11eb-8000-9f2b7ba3f8d4.png)
+
+(1) 일반적인 파일 입출력 절차
+    파일 입출력을 하기 위해서는 먼저 파일을 열어야 한다.
+    fopen 함수 : 파일 스트림 생성 -> 생성된 파일 스트림에 대한 FILE 포인터 리턴
+    fopen 함수는 스트림 생성, 입출력을 할 수 있도록 준비
+    FILE 포인터 : FILE 구조체 포인터 -> fopen 함수의 리턴값을 FILE 포인터 변수에 저장 필수
+    파일을 연 후 FILE 포인터를 인자로 전달해서 여러 가지 파일 입출력 함수 호출 가능
+    모든 입출력이 끝나면 파일을 받아야 한다(fclose)
+    
+    
+(2) 파일 열기
+    fopen 함수 : 파일 스트림 생성, 파일 스트림에 대한 FILE 포인터 return
+    
+    fopen 함수의 원형
+    FILE* fopen(const char* filename, const char* mode);
+    ->  filename : 파일 이름을 문자열로 지정, mode : 파일 열기 모드를 문자열로 지정 (mode에 따라 텍스트 파일 or 2진 파일 or 데이터를 읽기 or 데이터 쓰기 결정)
+    ->  default값 : 텍스트 파일
+    fopen 함수가 파일을 찾는 위치
+    ->  현재 작업 디렉도리에서 파일을 찾는다. Visual Studio 안에서 프로그램 실행 -> 프로젝트 폴더 : 현재 작업 디렉토리
+    ->  fopen 함수의 파일 이름에 절대 경로명 지정 가능
+        Ex) fp = fopen("c:\\work\\chap11\\ex11_02\\a.txt", "r");
+        
+    <파일 열기 모드로 사용할 수 있는 값>
+    ![KakaoTalk_20210109_220208194](https://user-images.githubusercontent.com/63184686/104092300-6bc4e480-52c6-11eb-856d-89c9884070ac.png)
+    
+    Ex) 텍스트 파일
+        FILE* fp = NULL;                    // 파일 포인터 준비
+        fp = fopen("a.txt", "r");           // 입력용 텍스트 파일을 연다 -> 열기 모드로 "r" 지정 : 텍스트 파일을 입력용으로 연다는 의미("rt"로 변환 가능)
+        
+        fp = fopen("a.dat", "wb");          // 출력용 2진 파일을 연다 -> 2진 파일을 열 때는 "b"를 함께 지정
+    
+    
+    "a", "a+" : 파일의 끝에만 쓸 수 있다 -> 원래 파일에 있던 데이터 변경X, 파일의 끝에 추가O
+    "r+", "w+", "a+" : 파일을 읽고 쓰는 작업 모두 가능 -> 읽기 모드 & 쓰기 모드를 전환하기 위해 fflush, fsetpos, fseek, rewind 함수 중 하나 호출
+    
+    파일을 열 수 없으면 fopen 함수 : return NULL -> 이후 입출력 관련 코드 수행X
+    Ex) #include <stdio.h>
+        int main(void)
+        {
+	            FILE* fp = fopen("a.txt", "r");
+	            if (fp == NULL) {
+		              printf("파일 열기 실패\n");
+		              return 1;                         // 파일 열기 실패 시 더 이상 입출력을 수행하지 않도록 처리
+	            }
+        }
+        
+        
+        
+(3) 파일 닫기
+    fclose 함수 : fopen 함수로 연 파일을 닫는 함수
+    
+    fclose 함수의 원형
+    int fclose(FILE* stream);
+    -> 매개변수 : FILE 포인터 지정
+    -> 파일 닫기 성공 : return 0;  실패 : return EOF;                                       // EOF : <stdio.h>에 -1로 정의되어 있는 매크로 상수, 파일의 끝을 나타냄
+    -> 널 포인터로 fclose 함수 호출 : error -> 파일 열기 실패 시 fclose 함수 호출X
+    
+    Ex) #define _CRT_SECURE_NO_WARNINGS
+        #include <stdio.h>
+        int main(void)
+        {
+	           FILE* fp = fopen("a.txt", "r");          // "a.txt"가 없으므로 파일 열기 실패
+	           if (fp == NULL) {                        // 파일 열기 실패했는지 반드시 확인해야함
+		             printf("파일 열기 실패\n");            
+		             return 1;                            // 파일 열기 실패 시 더 이상 입출력 실행되지 않도록 처리
+	           }
+	           printf("파일 열기 성공\n");
+	           fclose(fp);                              // 파일 열기가 성공인 경우에만 파일을 닫아야 한다.
+        }
+     
+    Ex) 파일 열기와 닫기(성공)
+        #define _CRT_SECURE_NO_WARNINGS
+        #include <stdio.h>
+        int main(void)
+        {
+	          FILE* fout = NULL;				             	// 출력용 파일 포인터
+	          FILE* fin = NULL;					              // 입력용 파일 포인터
+
+        	  fout = fopen("a.txt", "w");		        	// 출력용 텍스트 파일 열기
+	          if (fout == NULL) {
+	            	printf("파일 열기 실패\n");
+          		  return 1;
+          	}
+	          fclose(fout);						                // 출력용 파일 닫기
+
+	          fin = fopen("a.txt", "r");		        	// 입력용 텍스트 파일 열기
+	          if (fin == NULL) {
+	            	printf("파일 열기 실패\n");
+	            	return 1;
+          	}
+	          printf("파일 열기 성공\n");
+	          fclose(fin);						                // 입력용 파일 닫기
+        }
+        
+        
+(4) 스트림 상태 확인
+    ferror 함수
+    int ferror(FILE* stream);
+    -> 이전 입출력에서 errror가 발생했는지 확인
+    -> error 발생 O : return 0;
+       error 발생 X : return a; (a != 0)
+    
+    feof 함수
+    int feof(FILE* stream);
+    -> 파일의 끝인지 검사
+    -> 읽은 위치가 파일의 끝 O : return a; (a != 0)
+       읽은 위치가 파일의 끝 X : return 0;
+       
+    
+        
+    
+       
+        
+        
+        
+    
+    
+    
+    
+    
