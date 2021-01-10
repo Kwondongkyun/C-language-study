@@ -1,0 +1,185 @@
+### 텍스트 파일 입출력
+
+(1) fgetc, fputc 함수
+    fgetc 함수 : 파일에서 문자 하나를 읽어올 때 사용
+    
+    fgetc 함수의 원형
+    int fgetc(FILE* stream);
+    -> stream : stdin 지정 -> 표준 입력 스트림에서 문자 하나를 읽어옴
+    -> stream : 파일 포인터 -> 파일에서 문자 하나를 읽어옴
+      
+      
+    fputc 함수 : 파일로 문자 하나를 저장할 때 사용
+    
+    fputc 함수의 원형
+    int fputc(int ch, FILE* stream);
+    -> stream : stdout 지정 -> 표준 출력 스트림으로 문자 하나 출력
+    -> stream : 파일 포인터 -> 파일로 문자 하나 출력
+    
+    
+    < 콘솔 입력을 파일로 저장하기 >
+    Ex) 코드 설명 : 프로젝트 폴더 안에 a.txt 생성 -> 실행 결과에서 입력한 내용이 텍스트 파일로 저장됨
+        #define _CRT_SECURE_NO_WARNINGS
+        #include <stdio.h>
+        int main(void)
+        {
+	        FILE* fp = NULL;
+	        int ch;
+
+	        fp = fopen("a.txt", "w");                   // 출력용 파일을 열기
+	        if (fp == NULL) {
+		        printf("파일 열기 실패\n");
+		        return 1;
+	        }
+	          while ((ch = fgetc(stdin)) != EOF)        // 표준 입력에서 문자 하나를 읽는다.
+		           fputc(ch, fp);                         // 읽은 문자를 파일로 저장
+	          fclose(fp);
+        }
+       
+    < 파일의 내용을 콘솔로 출력하기 >
+    Ex) 코드 설명 : 파일에서 읽은 텍스트를 콘솔에 출력하는 코드
+        // 소스 파일 이름 : fgetc_test.c
+        #define _CRT_SECURE_NO_WARNINGS
+        #include <stdio.h>
+        int main(void)
+        {
+	          FILE* fp = NULL;
+	          int ch;
+
+	          fp = fopen("fgetc_test.c", "r");          // 프로젝트 디렉터리의 소스 파일을 연다
+	          if (fp == NULL) {
+		            printf("파일 열기 실패\n");
+		            return 1;
+	          }
+	          while ((ch = fgetc(fp)) != EOF)           // 파일에서 문자 하나를 읽는다
+		            fputc(ch, stdout);                    // 표준 출력 스트림으로 문자 하나를 출력한다
+	          fclose(fp);
+        }
+        
+        
+        
+(2) fgets, fputs 함수
+    fgets 함수 : 파일에서 한 줄의 문자열을 읽어올 때 사용
+    
+    fgets 함수의 원형
+    char* fgets(char* str, int count, FILE* stream);
+    -> stream : stdin 지정 -> 표준 입력 스트림에서 문자열을 읽어옴
+    -> 읽어온 문자열의 끝에는 줄바꿈 문자 포함 (!= gets_s 함수)
+    
+    -> stream 파일로부터 최대 count-1개의 문자를 읽어서 str 문자 배열에 저장
+    -> count-1개의 문자를 읽기 전에 줄바꿈 문자를 만나면 줄바꿈 문자까지 읽어옴
+    -> error 발생 or EOF 만남 : return NULL;
+    
+    fputs 함수의 원형
+    int fputs(const char* str, FILE* stream);
+    -> str 문자열을 stream 파일에 출력
+    -> stream : stdout 지정 -> 표준 출력 스트림으로 문자열 출력
+    -> 문자열만 출력(!= puts 함수 : 줄바꿈 문자까지 출력)
+    
+    < 텍스트 파일 복사 >
+    입력 스트림과 출력 스트림을 동시에 열어서 한 쪽 스트림에서 읽은 데이터를 다른 쪽 스트림으로 출력
+    
+    ★ 동시에 여러 개의 스트림 사용 -> FILE 포인터 따로따로 필요
+       FILE *fin = NULL;     // 입력 스트림에 대한 파일 포인터
+       FILE *fout = NULL;    // 출력 스트림에 대한 파일 포인터
+    
+    ★ 파일을 열 때 생성된 파일 스트림을 각각의 파일 포인터 변수에 저장하고 사용
+       fin = fopen(in_fname, "r");     // 입력 스트림 열기
+       fotu = fopen(out_fname, "w");   // 출력 스트림 열기
+    
+    ★ 각각의 파일을 닫아야 함
+       fclose(fin);
+       fclose(fout);
+     
+    Ex) 텍스트 파일의 백업 파일 생성
+        #define _CRT_SECURE_NO_WARNINGS
+        #include <stdio.h>
+        #include <string.h>
+        int main(void)
+        {
+	        char in_fname[128] = "";
+	        char out_fname[128] = "";
+
+	        FILE* fin = NULL;                     // 입력 스트림에 대한 파일 포인터
+	        FILE* fout = NULL;                    // 입력 스트림에 대한 파일 포인터
+	        char str[BUFSIZ];                     // BUFSIZ == 512 (stdio.h에 정의)
+
+	        printf("파일 이름? ");
+	        gets_s(in_fname, sizeof(in_fname));
+	        fin = fopen(in_fname, "r");           // 입력 스트림 열기
+          
+	        if (fin == NULL) {
+		         printf("%s 파일 열기 실패\n", in_fname);
+		         return 1;
+	        }
+	        strcpy(out_fname, in_fname);
+	        strcat(out_fname, ".bak");            // 출력 파일명 : 입력파일명.bak
+	        fout = fopen(out_fname, "w");         // 출력 스트림 열기
+          
+	        if (fout == NULL) {
+		          printf("%s 파일 열기 실패\n", out_fname);
+	        	  fclose(fin);                      // 출력 스트림을 열 수 없으면 입력 스트림을 닫고 종료
+      		    return 1;
+      	  }
+	        while (fgets(str, sizeof(str), fin != NULL))      // 텍스트 파일 복사
+	          	fputs(str, fout);
+              
+	        fclose(fin);                                      // 입력 스트림 닫기
+        	fclose(fout);                                     // 출력 스트림 닫기
+
+	        printf("파일 백업 성공: %s로 백업했습니다.\n", out_fname);
+        }
+
+(3) fscanf, fprintf 함수
+    fscanf 함수 : 형식 문자열을 이용해서 파일에서 입력받을 때 사용
+    
+    fscanf 함수의 원형
+    int fscanf(FILE* stream, const char* format, ...);    
+    
+    
+    fprintf 함수 : 파일로 출력
+    
+    fprintf 함수의 원형
+    int fprintf(FILE* stream, const char* format, ...);
+    
+    
+    < 입출력 함수에 파일 포인터 전달 >
+    Ex) 파일 포인터를 매개변수로 갖는 함수 정의
+        void print_array(const int arr[], int size, FILE* stream)           // 파일 포인터 매개변수 추가
+        {
+           int i;
+           for (i = 0; i < size; i++)
+               fprintf(stream, "%2d", arr[i]);                             // 파일 포인터를 이용해서 출력
+           fprintf(stream, "\n");
+        }
+    
+    
+    Ex) 파일 포인터를 매개변수로 갖는 코드
+        #define _CRT_SECURE_NO_WARNINGS
+        #include <stdio.h>
+        #include <string.h>
+        void print_array(const int arr[], int size, FILE* stream)
+        {
+          int i;
+          for (i = 0; i < size; i++)
+            fprintf(stream, "%2d ", arr[i]);                                // 파일 포인터를 이용해서 출력
+          fprintf(stream, "\n");
+        }
+        int main(void)
+        {
+          int arr[] = { 60, 34, 55, 28, 12, 5, 63, 45, 91 };
+          int size = sizeof(arr) / sizeof(arr[0]);
+          char filename[128] = "";
+          FILE* fp = NULL;
+
+          printf("파일 이름? ");
+          gets_s(filename, sizeof(filename));
+          fp = fopen(filename, "w");
+          if (fp == NULL)
+            fp = stdout;                                                    // 파일 열기 실패면 표준 출력에 출력
+          print_array(arr, size, fp);
+          fclose(fp);
+        }
+        
+        
+    
