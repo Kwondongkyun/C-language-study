@@ -36,6 +36,7 @@
     FILE* fopen(const char* filename, const char* mode);
     ->  filename : 파일 이름을 문자열로 지정, mode : 파일 열기 모드를 문자열로 지정 (mode에 따라 텍스트 파일 or 2진 파일 or 데이터를 읽기 or 데이터 쓰기 결정)
     ->  default값 : 텍스트 파일
+    
     fopen 함수가 파일을 찾는 위치
     ->  현재 작업 디렉도리에서 파일을 찾는다. Visual Studio 안에서 프로그램 실행 -> 프로젝트 폴더 : 현재 작업 디렉토리
     ->  fopen 함수의 파일 이름에 절대 경로명 지정 가능
@@ -95,23 +96,23 @@
         #include <stdio.h>
         int main(void)
         {
-	          FILE* fout = NULL;				             	// 출력용 파일 포인터
-	          FILE* fin = NULL;					              // 입력용 파일 포인터
+	        FILE* fout = NULL;				        // 출력용 파일 포인터
+	        FILE* fin = NULL;					// 입력용 파일 포인터
 
-        	  fout = fopen("a.txt", "w");		        	// 출력용 텍스트 파일 열기
-	          if (fout == NULL) {
+          	fout = fopen("a.txt", "w");		        	// 출력용 텍스트 파일 열기
+	        if (fout == NULL) {
 	            	printf("파일 열기 실패\n");
           		  return 1;
           	}
-	          fclose(fout);						                // 출력용 파일 닫기
+	        fclose(fout);			 			// 출력용 파일 닫기
 
-	          fin = fopen("a.txt", "r");		        	// 입력용 텍스트 파일 열기
-	          if (fin == NULL) {
-	            	printf("파일 열기 실패\n");
-	            	return 1;
+	        fin = fopen("a.txt", "r");		        	// 입력용 텍스트 파일 열기
+	        if (fin == NULL) {
+	            printf("파일 열기 실패\n");
+	            return 1;
           	}
-	          printf("파일 열기 성공\n");
-	          fclose(fin);						                // 입력용 파일 닫기
+	        printf("파일 열기 성공\n");
+	        fclose(fin);						// 입력용 파일 닫기
         }
         
         
